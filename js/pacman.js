@@ -4,7 +4,7 @@ var Pacman = function(game, key) {
 
     this.speed = 150;
     this.isDead = false;
-    // this.isAnimatingDeath = false;
+    this.isAnimatingDeath = false;
     this.keyPressTimer = 0;
 
     this.gridsize = this.game.gridsize;
@@ -29,13 +29,15 @@ var Pacman = function(game, key) {
     this.sprite.anchor.setTo(0.5);
     this.sprite.animations.add('munch', [0, 1, 2, 1], 20, true);
     //
+
     // this.fruit = game.add.sprite((14 * 16) + 8, (17 * 16) + 8);
     // this.fruit.anchor.set(0.5);
 
-    this.fruit = this.game.add.sprite((14 * 16) + 8, (17 * 16) + 8, 'fruit', 0);
+    this.fruit = this.game.add.sprite((14 * 16) + 8, (17*16) + 8, 'fruit', 0);
     this.fruit.anchor.setTo(.5);
+    this.game.physics.arcade.enable(this.fruit);
 
-    //this.sprite.animations.add("death", [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 10, false);
+    this.sprite.animations.add("death", [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 10, false);
 
     this.game.physics.arcade.enable(this.sprite);
     this.sprite.body.setSize(16, 16, 8, 8);
@@ -117,8 +119,20 @@ Pacman.prototype.update = function() {
     } else {
         this.move(Phaser.NONE);
         if (!this.isAnimatingDeath) {
-            // this.sprite.play("death");
-            // this.isAnimatingDeath = true;
+             this.sprite.play("death");
+             this.live = this.live - 1;
+             this.isAnimatingDeath = true;
+
+             this.music = game.add.audio('death');
+             this.music.loop = false;
+             this.music.volume = .1;
+             this.music.play();
+
+             game.add.text(134 , 215, "Game Over", { fontSize: "36px", fill: "#fff" });
+
+             setTimeout(function(){
+                game.state.add('Game', PacmanGame, true);
+             }, 3000);
         }
     }
 };
@@ -163,7 +177,7 @@ Pacman.prototype.eatDot = function(pacman, dot) {
 
     this.music = game.add.audio('chomp');
     this.music.loop = false;
-    this.music.volume = .1;
+    this.music.volume = .5;
     this.music.play();
 
     this.game.score ++;
@@ -180,8 +194,14 @@ Pacman.prototype.eatPill = function(pacman, pill) {
 
     this.game.score += 5;
     this.game.numPills --;
+    this.music.stop();
 
-    // this.game.enterFrightenedMode();
+    this.game.enterFrightenedMode();
+
+    this.music = game.add.audio('inter');
+    this.music.loop = false;
+    this.music.volume = .1;
+    this.music.play();
 };
 
 Pacman.prototype.eatFruit = function(pacman, fruit) {

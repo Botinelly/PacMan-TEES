@@ -1,4 +1,4 @@
-var game = new Phaser.Game(448, 496, Phaser.AUTO, "game");
+var game = new Phaser.Game(448, 530, Phaser.AUTO, "game");
 
 var PacmanGame = function (game) {
     this.map = null;
@@ -8,6 +8,8 @@ var PacmanGame = function (game) {
     this.TOTAL_DOTS = 0;
     this.score = 0;
     this.scoreText = null;
+    this.live = 3;
+    this.liveText = null;
 
     this.pacman = null;
     this.clyde = null;
@@ -111,6 +113,7 @@ PacmanGame.prototype = {
         this.load.audio('death', 'assets/pacman_death.wav');
         this.load.audio('eatFruit', 'assets/pacman_eatfruit.wav');
         this.load.audio('eatGhost', 'assets/pacman_eatghost.wav');
+        this.load.audio('inter', 'assets/pacman_intermission.wav');
 
 
 
@@ -120,7 +123,7 @@ PacmanGame.prototype = {
     create: function () {
 
         this.music = game.add.audio('intro');
-        this.music.loop = true;
+        this.music.loop = false;
         this.music.volume = .1;
         this.music.play();
 
@@ -137,7 +140,7 @@ PacmanGame.prototype = {
         this.numPills = this.map.createFromTiles(40, this.safetile, "pill", this.layer, this.pills);
 
         this.fruit = this.add.physicsGroup();
-        this.numFruit = this.map.createFromTiles(50, this.safetile, "fruit", this.layer, this.fruit);
+        this.numFruit = this.map.createFromTiles(30, this.safetile, "fruit", this.layer, this.fruit);
 
         //  The dots will need to be offset by 6px to put them back in the middle of the grid
         this.dots.setAll('x', 6, false, false, 1);
@@ -148,11 +151,12 @@ PacmanGame.prototype = {
         //  Pacman should collide with everything except the safe tile
         this.map.setCollisionByExclusion([this.safetile], true, this.layer);
 
-		// Our hero
+		    // Our hero
         this.pacman = new Pacman(this, "pacman");
 
         // Score and debug texts
-        this.scoreText = game.add.text(8, 272, "Score: " + this.score, { fontSize: "16px", fill: "#fff" });
+        this.scoreText = game.add.text(1 , 500, "Score: " + this.score, { fontSize: "16px", fill: "#fff" });
+
         // this.debugText = game.add.text(375, 260, "", { fontSize: "12px", fill: "#fff" });
         // this.overflowText = game.add.text(375, 280, "", { fontSize: "12px", fill: "#fff" });
 
@@ -171,7 +175,7 @@ PacmanGame.prototype = {
         // Ghosts
         this.blinky = new Ghost(this, "ghosts", "blinky", {x:13, y:11}, Phaser.RIGHT);
         this.pinky = new Ghost(this, "ghosts", "pinky", {x:15, y:14}, Phaser.LEFT);
-        // this.inky = new Ghost(this, "ghosts", "inky", {x:14, y:14}, Phaser.RIGHT);
+        //this.inky = new Ghost(this, "ghosts", "inky", {x:14, y:14}, Phaser.RIGHT);
         this.clyde = new Ghost(this, "ghosts", "clyde", {x:17, y:14}, Phaser.LEFT);
         this.ghosts.push(this.clyde, this.pinky, this.blinky);
 
@@ -264,7 +268,6 @@ PacmanGame.prototype = {
                 // this.isInkyOut = true;
                 // this.sendExitOrder(this.inky);
             }
-
             if (this.numDots < this.TOTAL_DOTS/3 && !this.isClydeOut) {
                 this.isClydeOut = true;
                 this.sendExitOrder(this.clyde);
