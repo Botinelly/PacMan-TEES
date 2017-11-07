@@ -375,11 +375,12 @@ PacmanGame.prototype = {
     },
 
     pause: function () {
+
         if(game.paused){
-			game.paused = false;
-		}else{
-			game.paused = true;
-		}
+    			game.paused = false;
+    		}else{
+    			game.paused = true;
+    		}
     }
 
 };
