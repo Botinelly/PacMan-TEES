@@ -33,7 +33,7 @@ var Pacman = function(game, key) {
     // this.fruit = game.add.sprite((14 * 16) + 8, (17 * 16) + 8);
     // this.fruit.anchor.set(0.5);
 
-    this.fruit = this.game.add.sprite((14 * 16) + 8, (17 * 16) + 8, 'fruit', 0);
+    this.fruit = this.game.add.sprite(-100,-100, 'fruit', 0);
     this.fruit.anchor.setTo(.5);
     this.game.physics.arcade.enable(this.fruit);
 
