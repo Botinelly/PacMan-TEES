@@ -10,6 +10,7 @@ var PacmanGame = function (game) {
     this.scoreText = null;
     this.live = 3;
     this.liveText = null;
+    this.readyText = null;
 
     this.pacman = null;
     this.clyde = null;
@@ -140,13 +141,13 @@ PacmanGame.prototype = {
         this.numPills = this.map.createFromTiles(40, this.safetile, "pill", this.layer, this.pills);
 
         this.fruit = this.add.physicsGroup();
-        this.numFruit = this.map.createFromTiles(30, this.safetile, "fruit", this.layer, this.fruit);
+        this.numFruit = this.map.createFromTiles(38, this.safetile, "fruit", this.layer, this.fruit);
 
         //  The dots will need to be offset by 6px to put them back in the middle of the grid
         this.dots.setAll('x', 6, false, false, 1);
         this.dots.setAll('y', 6, false, false, 1);
-        this.fruit.setAll('x', 9, false, false, 1);
-        this.fruit.setAll('y', 9, false, false, 1);
+        // this.fruit.setAll('x', 9, false, false, 1);
+        // this.fruit.setAll('y', 9, false, false, 1);
 
         //  Pacman should collide with everything except the safe tile
         this.map.setCollisionByExclusion([this.safetile], true, this.layer);
@@ -156,7 +157,7 @@ PacmanGame.prototype = {
 
         // Score and debug texts
         this.scoreText = game.add.text(1 , 500, "Score: " + this.score, { fontSize: "16px", fill: "#fff" });
-
+        this.liveeText = game.add.text(380 , 500, "Lives: " + this.live, { fontSize: "16px", fill: "#fff" });
         // this.debugText = game.add.text(375, 260, "", { fontSize: "12px", fill: "#fff" });
         // this.overflowText = game.add.text(375, 280, "", { fontSize: "12px", fill: "#fff" });
 
@@ -176,7 +177,7 @@ PacmanGame.prototype = {
         this.blinky = new Ghost(this, "ghosts", "blinky", {x:13, y:11}, Phaser.RIGHT);
         this.pinky = new Ghost(this, "ghosts", "pinky", {x:15, y:14}, Phaser.LEFT);
         //this.inky = new Ghost(this, "ghosts", "inky", {x:14, y:14}, Phaser.RIGHT);
-        this.clyde = new Ghost(this, "ghosts", "clyde", {x:17, y:14}, Phaser.LEFT);
+        this.clyde = new Ghost(this, "ghosts", "clyde", {x:15, y:14}, Phaser.LEFT);
         this.ghosts.push(this.clyde, this.pinky, this.blinky);
 
         this.sendExitOrder(this.pinky);
@@ -344,11 +345,11 @@ PacmanGame.prototype = {
                         color = "rgba(255, 165, 0, 0.6";
                         break;
                 }
-                // if (this.ghosts[i].ghostDestination) {
-                //     var x = this.game.math.snapToFloor(Math.floor(this.ghosts[i].ghostDestination.x), this.gridsize);
-                //     var y = this.game.math.snapToFloor(Math.floor(this.ghosts[i].ghostDestination.y), this.gridsize);
-                //     this.game.debug.geom(new Phaser.Rectangle(x, y, 16, 16), color);
-                // }
+                if (this.ghosts[i].ghostDestination) {
+                    var x = this.game.math.snapToFloor(Math.floor(this.ghosts[i].ghostDestination.x), this.gridsize);
+                    var y = this.game.math.snapToFloor(Math.floor(this.ghosts[i].ghostDestination.y), this.gridsize);
+                    this.game.debug.geom(new Phaser.Rectangle(x, y, 16, 16), color);
+                }
             }
             if (this.debugPosition) {
                 this.game.debug.geom(new Phaser.Rectangle(this.debugPosition.x, this.debugPosition.y, 16, 16), "#00ff00");
@@ -375,14 +376,30 @@ PacmanGame.prototype = {
     },
 
     pause: function () {
-
         if(game.paused){
-    			game.paused = false;
-    		}else{
-    			game.paused = true;
-    		}
+			       game.paused = false;
+		    }else{
+			       game.paused = true;
+		         }
+     },
+     restartGame: function(){
+         if(this.live === 0){
+               game.add.text(134 , 215, "Game Over", { fontSize: "36px", fill: "#fff" });
+               setTimeout(function(){
+                 game.state.add('Game', PacmanGame, true);
+               }, 3000);
+          }
+          else{
+              game.reset();
+          }
     }
-
 };
 
 game.state.add('Game', PacmanGame, true);
+setTimeout(function(){
+   this.readyText = game.add.text(200 , 270, "Ready!" , { fontSize: "16px", fill: "yellow" });
+   game.paused = true;
+}, 250);
+setTimeout(function(){
+   game.paused = false;
+}, 2000);

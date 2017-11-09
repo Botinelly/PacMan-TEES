@@ -24,8 +24,8 @@ var Pacman = function(game, key) {
     this.keyPressTimer = 0;
     this.KEY_COOLING_DOWN_TIME = 750;
 
-    //  Position Pacman at grid location 14x17 (the +8 accounts for his anchor)
-    this.sprite = this.game.add.sprite((14 * 16) + 8, (17 * 16) + 8, key, 0);
+    //  Position Pacman at grid location 13x23 (the +8 accounts for his anchor)
+    this.sprite = this.game.add.sprite((13 * 16) + 8, (23 * 16) + 8, key, 0);
     this.sprite.anchor.setTo(0.5);
     this.sprite.animations.add('munch', [0, 1, 2, 1], 20, true);
     //
@@ -128,11 +128,8 @@ Pacman.prototype.update = function() {
              this.music.volume = .1;
              this.music.play();
 
-             game.add.text(134 , 215, "Game Over", { fontSize: "36px", fill: "#fff" });
+             this.game.restartGame();
 
-             setTimeout(function(){
-                game.state.add('Game', PacmanGame, true);
-             }, 3000);
         }
     }
 };
