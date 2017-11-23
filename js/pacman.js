@@ -6,6 +6,7 @@ var Pacman = function(game, key) {
     this.isDead = false;
     this.isAnimatingDeath = false;
     this.keyPressTimer = 0;
+    this.life = 3;
 
     this.gridsize = this.game.gridsize;
     this.safetile = this.game.safetile;
@@ -120,7 +121,7 @@ Pacman.prototype.update = function() {
         this.move(Phaser.NONE);
         if (!this.isAnimatingDeath) {
              this.sprite.play("death");
-             this.live = this.live - 1;
+             this.life = this.life - 1;
              this.isAnimatingDeath = true;
 
              this.music = game.add.audio('death');

@@ -8,8 +8,8 @@ var PacmanGame = function (game) {
     this.TOTAL_DOTS = 0;
     this.score = 0;
     this.scoreText = null;
-    this.live = 3;
-    this.liveText = null;
+    // this.live = 3;
+    // this.liveText = null;
     this.readyText = null;
 
     this.pacman = null;
@@ -115,6 +115,7 @@ PacmanGame.prototype = {
         this.load.audio('eatFruit', 'assets/pacman_eatfruit.wav');
         this.load.audio('eatGhost', 'assets/pacman_eatghost.wav');
         this.load.audio('inter', 'assets/pacman_intermission.wav');
+        this.load.spritesheet('life', 'assets/pacman.png', 32, 32);
 
 
 
@@ -157,7 +158,13 @@ PacmanGame.prototype = {
 
         // Score and debug texts
         this.scoreText = game.add.text(1 , 500, "Score: " + this.score, { fontSize: "16px", fill: "#fff" });
-        this.liveeText = game.add.text(380 , 500, "Lives: " + this.live, { fontSize: "16px", fill: "#fff" });
+        // this.liveeText = game.add.text(380 , 500, "Lives: " + this.pacman.life, { fontSize: "16px", fill: "#fff" });
+        this.life1 = game.add.sprite(110, 530, "life", 1)
+        this.life2 = game.add.sprite(145, 530, "life", 1)
+        this.life3 = game.add.sprite(180, 530, "life", 1)
+        this.life1.angle = 180;
+        this.life2.angle = 180;
+        this.life3.angle = 180;
         // this.debugText = game.add.text(375, 260, "", { fontSize: "12px", fill: "#fff" });
         // this.overflowText = game.add.text(375, 280, "", { fontSize: "12px", fill: "#fff" });
 
@@ -176,9 +183,9 @@ PacmanGame.prototype = {
         // Ghosts
         this.blinky = new Ghost(this, "ghosts", "blinky", {x:13, y:11}, Phaser.RIGHT);
         this.pinky = new Ghost(this, "ghosts", "pinky", {x:15, y:14}, Phaser.LEFT);
-        //this.inky = new Ghost(this, "ghosts", "inky", {x:14, y:14}, Phaser.RIGHT);
+        this.inky = new Ghost(this, "ghosts", "inky", {x:14, y:14}, Phaser.RIGHT);
         this.clyde = new Ghost(this, "ghosts", "clyde", {x:15, y:14}, Phaser.LEFT);
-        this.ghosts.push(this.clyde, this.pinky, this.blinky);
+        this.ghosts.push(this.clyde, this.pinky, this.blinky, this.inky);
 
         this.sendExitOrder(this.pinky);
     },
@@ -214,6 +221,7 @@ PacmanGame.prototype = {
             this[ghost.name].resetSafeTiles();
             this.score += 10;
         } else {
+            // console.log("pacman is dead");
             this.killPacman();
         }
     },
@@ -237,6 +245,7 @@ PacmanGame.prototype = {
     killPacman: function() {
         this.pacman.isDead = true;
         this.stopGhosts();
+        // this.restartGame();
     },
 
     stopGhosts: function() {
@@ -266,8 +275,8 @@ PacmanGame.prototype = {
             }
 
             if (this.TOTAL_DOTS - this.numDots > 30 && !this.isInkyOut) {
-                // this.isInkyOut = true;
-                // this.sendExitOrder(this.inky);
+                this.isInkyOut = true;
+                this.sendExitOrder(this.inky);
             }
             if (this.numDots < this.TOTAL_DOTS/3 && !this.isClydeOut) {
                 this.isClydeOut = true;
@@ -383,15 +392,31 @@ PacmanGame.prototype = {
 		         }
      },
      restartGame: function(){
-         if(this.live === 0){
+         // console.log("restartGame");
+         if(this.pacman.life < 1){
+                this.life1.kill();
                game.add.text(134 , 215, "Game Over", { fontSize: "36px", fill: "#fff" });
                setTimeout(function(){
                  game.state.add('Game', PacmanGame, true);
                }, 3000);
           }
           else{
-              game.reset();
+              var self = this;
+              this.game.time.events.add(2250, function () {self.reset(); }, self);
           }
+    },
+
+    reset: function(){
+        console.log("reset");
+        // this.liveeText.text ="Lives: " + this.pacman.life;
+        if (this.pacman.life == 2){
+            console.log(this.pacman.life);
+            this.life3.kill();
+        }
+        if (this.pacman.life == 1){
+            console.log(this.pacman.life);
+            this.life2.kill();
+        }
     }
 };
 
